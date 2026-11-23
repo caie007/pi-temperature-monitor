@@ -2,6 +2,7 @@
 """Receive temperature readings over HTTP and store them in SQLite.
 
 Endpoints:
+  GET  /                  dashboard page (dashboard.html)
   POST /readings          JSON body {"device", "temperature_c", "timestamp"}, needs X-API-Key
   GET  /readings?limit=N  latest readings as JSON (default 100, max 1000)
   GET  /health            liveness check
@@ -25,6 +26,8 @@ MIN_TEMP_C, MAX_TEMP_C = -55.0, 125.0  # DS18B20 operating range
 _db_lock = threading.Lock()
 DB_PATH = "readings.db"
 API_KEY = ""
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard.html"), "rb") as _f:
+    DASHBOARD_HTML = _f.read()
 
 
 def init_db(path):
@@ -72,7 +75,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         url = urlparse(self.path)
-        if url.path == "/health":
+        if url.path == "/":
+            data = DASHBOARD_HTML
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Content-Security-Policy", "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'")
+            self.end_headers()
+            self.wfile.write(data)
+        elif url.path == "/health":
             self._send_json(200, {"status": "ok"})
         elif url.path == "/readings":
             try:
