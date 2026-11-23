@@ -63,6 +63,10 @@ Use the same key on the Pi and the server. Keys can be generated with `python3 -
 
 ## Dashboard
 
+![Dashboard showing seven days of temperature readings](docs/dashboard.png)
+
+*Screenshot with simulated sample data (7 days, one reading every 15 minutes).*
+
 Open `https://temps.example.com/` in a browser. The page shows the latest reading, min, max and average for the selected range (1 h, 24 h, 7 d or all), a line chart with a hover tooltip, and a table of recent readings. It refreshes every 30 seconds.
 
 The dashboard reads `GET /readings` without a key, so anyone with the URL can see the temperatures. Put an access control in front of the server (for example Caddy `basicauth`) if that matters to you.
