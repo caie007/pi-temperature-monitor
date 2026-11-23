@@ -1,0 +1,16 @@
+[Unit]
+Description=Send temperature readings from the Raspberry Pi
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/pi-temperature-monitor
+Environment=TEMP_API_KEY=replace-with-your-key
+ExecStart=/usr/bin/python3 /home/pi/pi-temperature-monitor/sender.py --url https://temps.example.com/readings --interval 60
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
